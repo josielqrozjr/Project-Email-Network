@@ -1,3 +1,14 @@
+'''
+db.py
+
+Este arquivo é usado somente para leitura do dataset fornecido e gravação dos dados em um arquivo
+binário "data.bin". Estrutura dos objetos salvos no binário:
+[ ID  | SENDER | RECEIVER ]
+[ INT | STRING | LIST[]   ]
+
+'''
+
+
 import os
 import re
 import pickle
@@ -5,7 +16,7 @@ import pickle
 
 def extract_email_addresses(text):
     """Extrai e-mails de uma string e remove duplicatas."""
-    emails = set(re.findall(r'[\w\.\-]+@[\w\.\-]+', text))
+    emails = set(re.findall(r'[\w\.\-\']+@[\w\.\-]+', text))
     return list(emails)
 
 
@@ -75,6 +86,6 @@ def process_email_directory(root_dir, output_file):
 
 # Exemplo de uso
 root_directory = '/Users/qrozjr/Library/CloudStorage/OneDrive-GrupoMarista/Computer Science/5_Período/Grafos/Project-Email-Network/models/AmostraEnron-2016'  # Atualize conforme necessário
-output_binary = '/Users/qrozjr/Library/CloudStorage/OneDrive-GrupoMarista/Computer Science/5_Período/Grafos/Project-Email-Network/models/emails_data.bin'
+output_binary = '/Users/qrozjr/Library/CloudStorage/OneDrive-GrupoMarista/Computer Science/5_Período/Grafos/Project-Email-Network/models/data.bin'
 
 process_email_directory(root_directory, output_binary)
