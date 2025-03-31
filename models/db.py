@@ -98,4 +98,4 @@ def process_email_directory(root_dir, output_file):
 
 
 # Chamada da função para gravar o binário
-process_email_directory(root_directory, output_binary)
+process_email_directory(dataset_directory, output_binary)
