@@ -1,4 +1,4 @@
-'''
+"""
 db.py
 
 Este arquivo é usado somente para leitura do dataset fornecido e gravação dos dados em um arquivo
@@ -6,23 +6,32 @@ binário "data.bin". Estrutura dos objetos salvos no binário:
 [ ID  | SENDER | RECEIVER ]
 [ INT | STRING | LIST[]   ]
 
-'''
+"""
 
-
+from dotenv import load_dotenv
 import os
 import re
 import pickle
 
+load_dotenv() # Load the .env
+
+# Directory
+PATH = os.getenv("ROOT_PATH")
+dataset_directory = f'{PATH}/models/AmostraEnron-2016'
+output_binary = f'{PATH}/models/data.bin'
+
 
 def extract_email_addresses(text):
-    """Extrai e-mails de uma string e remove duplicatas."""
+    """
+    Extração de e-mails de uma string e remove duplicatas.
+    """
     emails = set(re.findall(r'[\w\.\-\']+@[\w\.\-]+', text))
     return list(emails)
 
 
 def extract_field(field_name, content):
     """
-    Extrai o conteúdo de um campo como 'To:', 'Cc:', 'Bcc:' considerando quebras de linha.
+    Extração do conteúdo de um campo como 'To:', 'Cc:', 'Bcc:' considerando quebras de linha.
     """
     pattern = rf'{field_name}:\s*((?:.+\n?)+)'
     match = re.search(pattern, content, re.MULTILINE)
@@ -35,7 +44,9 @@ def extract_field(field_name, content):
 
 
 def process_email_file(file_path, email_id):
-    """Lê um arquivo de e-mail e extrai ID, Sender e Receivers."""
+    """
+    Leitura de um arquivo de e-mail e extrai ID, Sender e Receivers.
+    """
     try:
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
             content = file.read()
@@ -64,7 +75,9 @@ def process_email_file(file_path, email_id):
 
 
 def process_email_directory(root_dir, output_file):
-    """Percorre todos os diretórios e processa os e-mails."""
+    """
+    Percorre todos os diretórios e processa os e-mails.
+    """
     email_id = 1
     email_data = []
 
@@ -84,8 +97,5 @@ def process_email_directory(root_dir, output_file):
     print(f"Processamento concluído. {len(email_data)} e-mails salvos em {output_file}")
 
 
-# Exemplo de uso
-root_directory = '/Users/qrozjr/Library/CloudStorage/OneDrive-GrupoMarista/Computer Science/5_Período/Grafos/Project-Email-Network/models/AmostraEnron-2016'  # Atualize conforme necessário
-output_binary = '/Users/qrozjr/Library/CloudStorage/OneDrive-GrupoMarista/Computer Science/5_Período/Grafos/Project-Email-Network/models/data.bin'
-
+# Chamada da função para gravar o binário
 process_email_directory(root_directory, output_binary)

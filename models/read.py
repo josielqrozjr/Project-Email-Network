@@ -1,11 +1,16 @@
+from dotenv import load_dotenv
+import os
 import pickle
 
+load_dotenv()  #Load the .env file variables
+
 # Nome do arquivo binário onde os dados foram armazenados
-bin_file = "/Users/qrozjr/Library/CloudStorage/OneDrive-GrupoMarista/Computer Science/5_Período/Grafos/Project-Email-Network/models/emails_data.bin"
+PATH = os.getenv("ROOT_PATH")
+bin_file = f'{PATH}/models/data.bin'
 
 
 # Ler os dados do arquivo binário
-def read_binary_file(file_path, num_records=2):
+def read_binary_file(file_path, num_records=200):
     try:
         with open(file_path, "rb") as f:
             emails = pickle.load(f)  # Carrega todos os registros do arquivo
