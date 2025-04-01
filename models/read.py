@@ -10,7 +10,7 @@ bin_file = f'{PATH}/models/data.bin'
 
 
 # Ler os dados do arquivo binário
-def read_binary_file(file_path, num_records=200):
+def read_binary_file(file_path, num_records=3):
     try:
         with open(file_path, "rb") as f:
             emails = pickle.load(f)  # Carrega todos os registros do arquivo
@@ -18,6 +18,7 @@ def read_binary_file(file_path, num_records=200):
 
             # Exibir alguns registros para teste
             for i, email in enumerate(emails[:num_records]):
+                #if email['sender'] is not None:
                 print(f"ID: {email['id']}")
                 print(f"Sender: {email['sender']}")
                 print(f"Receiver: {email['receiver']}")

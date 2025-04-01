@@ -6,6 +6,10 @@ binário "data.bin". Estrutura dos objetos salvos no binário:
 [ ID  | SENDER | RECEIVER ]
 [ INT | STRING | LIST[]   ]
 
+Falta:
+- Tratar Sender:vazio e Receiver:vazio
+    O Sender não pode ser vazio, pois assim não haverá vértice
+
 """
 
 from dotenv import load_dotenv
@@ -25,7 +29,7 @@ def extract_email_addresses(text):
     """
     Extração de e-mails de uma string e remove duplicatas.
     """
-    emails = set(re.findall(r'[\w\.\-\']+@[\w\.\-]+', text))
+    emails = set(re.findall(r'[\w\.\-\']+@[\w\.\-]+', text)) # Regex para identificar um endereço de e-mail
     return list(emails)
 
 
@@ -59,7 +63,9 @@ def process_email_file(file_path, email_id):
     cc_field = extract_field('Cc', content)
     bcc_field = extract_field('Bcc', content)
 
-    sender = sender_match.group(1).strip() if sender_match else ""
+    sender = sender_match.group(1).strip() if sender_match else None # Evita que o programe pare caso o atributo seja None
+    if sender is None : return False                                 # Desvia o fluxo caso o Sender/Vértice seja vazio
+
     receivers = set()
 
     if to_field:
