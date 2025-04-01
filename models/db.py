@@ -6,10 +6,6 @@ binário "data.bin". Estrutura dos objetos salvos no binário:
 [ ID  | SENDER | RECEIVER ]
 [ INT | STRING | LIST[]   ]
 
-Falta:
-- Tratar Sender:vazio e Receiver:vazio
-    O Sender não pode ser vazio, pois assim não haverá vértice
-
 """
 
 from dotenv import load_dotenv
