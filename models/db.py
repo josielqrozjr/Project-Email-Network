@@ -6,7 +6,7 @@ load_dotenv()  #Load the .env file variables
 
 # Nome do arquivo binário onde os dados foram armazenados
 PATH = os.getenv("ROOT_PATH")
-bin_file = f'{PATH}/models/data.bin'
+bin_file = f'{PATH}/data/data.bin'
 
 
 # Ler os dados do arquivo binário

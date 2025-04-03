@@ -17,8 +17,8 @@ load_dotenv() # Load the .env
 
 # Directory
 PATH = os.getenv("ROOT_PATH")
-dataset_directory = f'{PATH}/models/AmostraEnron-2016'
-output_binary = f'{PATH}/models/data.bin'
+dataset_directory = f'{PATH}/data/AmostraEnron-2016'
+output_binary = f'{PATH}/data/data.bin'
 
 
 def extract_email_addresses(text):
