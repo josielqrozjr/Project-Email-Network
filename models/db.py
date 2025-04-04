@@ -10,7 +10,7 @@ bin_file = f'{PATH}/data/data.bin'
 
 
 # Ler os dados do arquivo binário
-def read_binary_file(file_path, num_records=33):
+def read_binary_file(file_path, num_records=3):
     try:
         with open(file_path, "rb") as f:
             emails = pickle.load(f)  # Carrega todos os registros do arquivo
