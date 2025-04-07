@@ -21,7 +21,7 @@ def gerar_grafo():
         print(sender, receivers)
 
         for receiver in receivers:
-            conexao = (sender, receiver)
+            conexao = (sender.lower(), receiver.lower())
             if conexao in arestas:
                 arestas[conexao] += 1
             else:
@@ -33,7 +33,7 @@ def gerar_grafo():
 
     salvar_grafo_txt()
 
-    return 'Grafo gerado com sucesso!'
+    return '\nGrafo gerado com sucesso!'
 
 
 def salvar_grafo_txt(caminho_arquivo='../data/grafo.txt'):
@@ -46,4 +46,4 @@ def salvar_grafo_txt(caminho_arquivo='../data/grafo.txt'):
     logger.info(f"Grafo salvo com sucesso em {caminho_arquivo}")
 
 # Somente para teste
-#gerar_grafo()
+gerar_grafo()
