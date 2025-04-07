@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from utils.logger import logger
 import os
 import pickle
 
@@ -10,25 +11,28 @@ bin_file = f'{PATH}/data/data.bin'
 
 
 # Ler os dados do arquivo binário
-def read_binary_file(file_path, num_records=3):
+def read_binary_file(file_path):
     try:
         with open(file_path, "rb") as f:
-            emails = pickle.load(f)  # Carrega todos os registros do arquivo
-            print(f"Total de registros: {len(emails)}\n")
-
-            # Exibir alguns registros para teste
-            for i, email in enumerate(emails[:num_records]):
-                #if email['sender'] is not None:
-                print(f"ID: {email['id']}")
-                print(f"Sender: {email['sender']}")
-                print(f"Receiver: {email['receiver']}")
-                print("-" * 50)
+            data_email = pickle.load(f)  # Carrega todos os registros do arquivo
+            logger.info(f"Total de registros: {len(data_email)}")
+            return data_email
 
     except FileNotFoundError:
-        print("Arquivo binário não encontrado.")
+        logger.warning("Arquivo binário não encontrado.")
     except Exception as e:
-        print(f"Erro ao ler o arquivo: {e}")
+        logger.critical(f"Erro ao ler o arquivo: {e}")
 
 
 # Chamar a função para testar
-read_binary_file(bin_file)
+db = read_binary_file(bin_file)
+
+# Teste da variavel
+'''
+for i, db in enumerate(db[:3]):
+    #if db['sender'] is not None:
+    print(f"ID: {db['id']}")
+    print(f"Sender: {db['sender']}")
+    print(f"Receiver: {db['receiver']}")
+    print("-" * 50)
+'''
