@@ -1,6 +1,6 @@
 """
 two_controller.py
-Controller referente a análise do grafo
+Controller referente a solução da questão 1 (análise do grafo)
 --> Extração de métricas e informações da rede construída
 """
 
@@ -30,10 +30,6 @@ def get_vertices_isolados():
     return vertices_isolados, len(vertices_isolados)
 
 def get_maiores_graus_saida(top=20):
-    """
-    d. Os 20 indivíduos que possuem maior grau de saída e os valores
-    correspondentes (de maneira ordenada e decrescente de acordo com o grau)
-    """
     graus_saida = {}
     for vertice, destinos in grafo.adj_list.items():
         graus_saida[vertice] = len(destinos)
@@ -41,10 +37,6 @@ def get_maiores_graus_saida(top=20):
     return maiores_graus[:top]
 
 def get_maiores_graus_entrada(top=20):
-    """
-    e. Os 20 indivíduos que possuem maior grau de entrada e os valores
-    correspondentes (de maneira ordenada e decrescente de acordo com o grau)
-    """
     graus_entrada = {}
     for vertice in grafo.adj_list:
         graus_entrada[vertice] = 0
@@ -58,9 +50,6 @@ def get_maiores_graus_entrada(top=20):
     return maiores_graus[:top]
 
 def exibir_info_grafo():
-    """
-    Função que exibe todas as informações solicitadas do grafo
-    """
     print("\n=== INFORMAÇÕES DO GRAFO ===")
     print(f"Número de vértices (ordem): {get_numero_vertices()}")
     print(f"Número de arestas (tamanho): {get_numero_arestas()}")
