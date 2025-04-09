@@ -6,8 +6,13 @@ import pickle
 load_dotenv()  #Load the .env file variables
 
 # Nome do arquivo binário onde os dados foram armazenados
-PATH = os.getenv("ROOT_PATH")
+PATH = os.getenv("ROOT_PATH", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 bin_file = f'{PATH}/data/data.bin'
+
+# Caminho alternativo se o PATH não estiver configurado corretamente
+if not os.path.exists(bin_file):
+    bin_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'data.bin')
+    logger.warning(f"Usando caminho alternativo para o arquivo binário: {bin_file}")
 
 
 # Ler os dados do arquivo binário
@@ -19,7 +24,7 @@ def read_binary_file(file_path):
             return data_email
 
     except FileNotFoundError:
-        logger.warning("Arquivo binário não encontrado.")
+        logger.warning(f"Arquivo binário não encontrado: {file_path}")
     except Exception as e:
         logger.critical(f"Erro ao ler o arquivo: {e}")
 
