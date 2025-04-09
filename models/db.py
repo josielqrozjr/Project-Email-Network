@@ -3,19 +3,16 @@ from utils.logger import logger
 import os
 import pickle
 
-load_dotenv()  #Load the .env file variables
+load_dotenv()
 
-# Nome do arquivo binário onde os dados foram armazenados
 PATH = os.getenv("ROOT_PATH", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 bin_file = f'{PATH}/data/data.bin'
 
-# Caminho alternativo se o PATH não estiver configurado corretamente
 if not os.path.exists(bin_file):
     bin_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'data.bin')
     logger.warning(f"Usando caminho alternativo para o arquivo binário: {bin_file}")
 
 
-# Ler os dados do arquivo binário
 def read_binary_file(file_path):
     try:
         with open(file_path, "rb") as f:
@@ -29,7 +26,6 @@ def read_binary_file(file_path):
         logger.critical(f"Erro ao ler o arquivo: {e}")
 
 
-# Chamar a função para testar
 db = read_binary_file(bin_file)
 
 # Teste da variavel
