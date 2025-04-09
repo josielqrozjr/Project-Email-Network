@@ -42,4 +42,5 @@ python main.py
    - **Extrair informações**: Mostra métricas e análises do grafo
    
 ## Autores
-Desenvolvido como projeto acadêmico para análise de redes.
+Desenvolvido como projeto acadêmico para Teoria dos Grafos.
+Por: Josiel Queiroz, Matheus Moreira, Mateus Alves, João Vitor Antunes.
