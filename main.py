@@ -1,6 +1,7 @@
 #from views.gui import GUI
 from controller.one_controller import gerar_grafo
 from controller.two_controller import exibir_info_grafo
+from controller.four_controller import verificar_menor_caminho
 
 def main():
     #user_interface = GUI()
@@ -8,6 +9,7 @@ def main():
         print("\nEscolha a estrutura para testar:")
         print("1 - Gerar novo")
         print("2 - Extrair informações")
+        print("3 - Verificar menor caminho (Dijkstra)")
         print("0 - Encerrar")
 
         opcao = input("\nDigite o número da opção: ")
@@ -17,6 +19,8 @@ def main():
             print(resultado)
         elif opcao == "2":
             exibir_info_grafo()
+        elif opcao == "3":
+            verificar_menor_caminho()
         elif opcao == "0":
             print("Encerrando o programa.")
             break
