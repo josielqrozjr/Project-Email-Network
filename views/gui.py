@@ -42,7 +42,9 @@ class GUI:
             "destaque": "#3F51B5",      # Azul índigo
             "destaque_hover": "#303F9F", # Azul índigo mais escuro
             "botao_texto": "#FFFFFF",   # Branco
-            "borda": "#E0E0E0"          # Cinza claro
+            "borda": "#E0E0E0",         # Cinza claro
+            "header_bg": "#3F51B5",     # Cor de fundo do header
+            "header_text": "#FFFFFF"    # Cor de texto do header
         }
         
         if root is None:
@@ -69,14 +71,15 @@ class GUI:
         fonte_padrao = font.nametofont("TkDefaultFont")
         fonte_padrao.configure(family="Segoe UI", size=10)
         
-        # Estilo para os botões
+        # Estilo para os botões (bordas arredondadas)
         self.estilo.configure('TButton', 
                           background=self.cores["destaque"],
                           foreground=self.cores["botao_texto"],
                           font=("Segoe UI", 10, "bold"),
                           borderwidth=0,
                           focusthickness=3,
-                          focuscolor=self.cores["destaque"])
+                          focuscolor=self.cores["destaque"],
+                          relief="flat")
         
         self.estilo.map('TButton',
                     background=[('active', self.cores["destaque_hover"])],
@@ -84,6 +87,10 @@ class GUI:
         
         # Estilo para os frames
         self.estilo.configure('TFrame', background=self.cores["bg_frame"])
+        
+        # Estilo para os frames arredondados
+        self.estilo.configure('Rounded.TFrame', 
+                          background=self.cores["bg_frame"])
         
         # Estilo para os notebooks (abas)
         self.estilo.configure('TNotebook', background=self.cores["bg_principal"])
@@ -97,30 +104,50 @@ class GUI:
                     background=[('selected', self.cores["destaque"])],
                     foreground=[('selected', self.cores["botao_texto"])])
         
-        # Estilo para os LabelFrames
-        self.estilo.configure('TLabelframe', 
+        # Estilo para os LabelFrames (bordas arredondadas)
+        self.estilo.configure('Rounded.TLabelframe', 
                           background=self.cores["bg_frame"],
                           foreground=self.cores["texto"],
-                          borderwidth=1,
-                          relief="solid")
+                          borderwidth=2,
+                          relief="groove")
         
-        self.estilo.configure('TLabelframe.Label', 
+        self.estilo.configure('Rounded.TLabelframe.Label', 
                           background=self.cores["bg_frame"],
                           foreground=self.cores["titulo"],
                           font=("Segoe UI", 11, "bold"))
+                          
+        # Estilo para o header
+        self.estilo.configure('Header.TFrame',
+                          background=self.cores["header_bg"])
+        
+        # Estilo para painel vertical
+        self.estilo.configure('TSeparator', 
+                          background=self.cores["borda"])
     
     def criar_widgets(self):
         # Frame principal para centralizar o conteúdo
         self.frame_principal = ttk.Frame(self.root, style='TFrame')
         self.frame_principal.pack(fill='both', expand=True, padx=20, pady=20)
         
-        # Título da aplicação
-        titulo_label = tk.Label(self.frame_principal, 
-                             text="Análise de Rede de Emails - Dataset Enron",
-                             font=("Segoe UI", 16, "bold"),
-                             background=self.cores["bg_frame"],
-                             foreground=self.cores["titulo"])
-        titulo_label.pack(pady=(0, 20))
+        # Header da aplicação
+        self.header_frame = ttk.Frame(self.frame_principal, style='Header.TFrame')
+        self.header_frame.pack(fill='x', pady=(0, 20))
+        
+        # Conteúdo do header
+        titulo_label = tk.Label(self.header_frame, 
+                             text="Análise de Rede de Emails",
+                             font=("Segoe UI", 18, "bold"),
+                             background=self.cores["header_bg"],
+                             foreground=self.cores["header_text"])
+        titulo_label.pack(side='left', padx=20, pady=15)
+        
+        # Subtítulo no header
+        subtitulo_label = tk.Label(self.header_frame, 
+                                text="Dataset Enron | Visualizador de Grafo de Comunicações",
+                                font=("Segoe UI", 11),
+                                background=self.cores["header_bg"],
+                                foreground=self.cores["header_text"])
+        subtitulo_label.pack(side='left', padx=10, pady=15)
         
         # Notebook (abas)
         self.notebook = ttk.Notebook(self.frame_principal)
@@ -140,27 +167,46 @@ class GUI:
         
         # Conteúdo da Aba Principal
         # Frame para as ações
-        self.frame_acoes = ttk.LabelFrame(self.tab_principal, text="Ações", style='TLabelframe')
+        self.frame_acoes = ttk.LabelFrame(self.tab_principal, text="Ações", style='Rounded.TLabelframe')
         self.frame_acoes.pack(fill='x', expand=False, padx=15, pady=15)
         
         # Container para os botões
         self.frame_botoes = ttk.Frame(self.frame_acoes, style='TFrame')
         self.frame_botoes.pack(pady=15)
         
-        # Botões com ícones
-        self.btn_gerar = ttk.Button(self.frame_botoes, text="Gerar Grafo", 
-                                 command=self.executar_gerar_grafo,
-                                 width=20)
+        # Função para criar botões arredondados personalizados
+        def criar_botao_arredondado(parent, texto, comando, largura=20):
+            frame = tk.Frame(parent, bg=self.cores["destaque"], bd=0, highlightthickness=0)
+            frame.bind("<Enter>", lambda e: frame.config(bg=self.cores["destaque_hover"]))
+            frame.bind("<Leave>", lambda e: frame.config(bg=self.cores["destaque"]))
+            
+            # Criando um Canvas para desenhar a borda arredondada
+            canvas = tk.Canvas(frame, bg=self.cores["destaque"], highlightthickness=0, 
+                            width=largura*8, height=32)
+            canvas.pack(side='left', fill='both', expand=True)
+            
+            # Criando o botão
+            btn = tk.Button(canvas, text=texto, command=comando,
+                         bg=self.cores["destaque"], fg=self.cores["botao_texto"],
+                         activebackground=self.cores["destaque_hover"],
+                         activeforeground=self.cores["botao_texto"],
+                         font=("Segoe UI", 10, "bold"),
+                         bd=0, padx=10, pady=0)
+            
+            btn_window = canvas.create_window(largura*4, 16, window=btn)
+            btn.bind("<Enter>", lambda e: frame.config(bg=self.cores["destaque_hover"]))
+            btn.bind("<Leave>", lambda e: frame.config(bg=self.cores["destaque"]))
+            
+            return frame
+        
+        # Botões com cantos arredondados
+        self.btn_gerar = criar_botao_arredondado(self.frame_botoes, "Gerar Grafo", self.executar_gerar_grafo)
         self.btn_gerar.pack(side='left', padx=10)
         
-        self.btn_info = ttk.Button(self.frame_botoes, text="Mostrar Informações", 
-                               command=self.mostrar_informacoes,
-                               width=20)
+        self.btn_info = criar_botao_arredondado(self.frame_botoes, "Mostrar Informações", self.mostrar_informacoes)
         self.btn_info.pack(side='left', padx=10)
         
-        self.btn_visualizar = ttk.Button(self.frame_botoes, text="Visualizar Grafo", 
-                                  command=self.visualizar_grafo,
-                                  width=20)
+        self.btn_visualizar = criar_botao_arredondado(self.frame_botoes, "Visualizar Grafo", self.visualizar_grafo)
         self.btn_visualizar.pack(side='left', padx=10)
         
         # Layout dividido horizontalmente para o painel principal
@@ -168,10 +214,10 @@ class GUI:
         self.painel_principal.pack(fill='both', expand=True, padx=15, pady=(0, 15))
         
         # Frame para a área de log (lado esquerdo)
-        self.frame_log = ttk.LabelFrame(self.painel_principal, text="Log de Operações", style='TLabelframe')
+        self.frame_log = ttk.LabelFrame(self.painel_principal, text="Log de Operações", style='Rounded.TLabelframe')
         
         # Frame para visualização do grafo (lado direito)
-        self.frame_preview = ttk.LabelFrame(self.painel_principal, text="Pré-visualização do Grafo", style='TLabelframe')
+        self.frame_preview = ttk.LabelFrame(self.painel_principal, text="Pré-visualização do Grafo", style='Rounded.TLabelframe')
         
         # Adicionar ambos os painéis à janela principal
         self.painel_principal.add(self.frame_log, weight=1)
@@ -197,7 +243,7 @@ class GUI:
         
         # Conteúdo da Aba de Informações
         # Frame para as estatísticas do grafo
-        self.frame_info = ttk.LabelFrame(self.tab_info, text="Estatísticas e Dados do Grafo", style='TLabelframe')
+        self.frame_info = ttk.LabelFrame(self.tab_info, text="Estatísticas e Dados do Grafo", style='Rounded.TLabelframe')
         self.frame_info.pack(fill='both', expand=True, padx=15, pady=15)
         
         # Área para mostrar informações do grafo
@@ -212,7 +258,7 @@ class GUI:
         self.info_area.pack(fill='both', expand=True, padx=5, pady=5)
         
         # Conteúdo da Aba de Visualização
-        self.frame_visualizacao = ttk.LabelFrame(self.tab_visualizacao, text="Visualização do Grafo", style='TLabelframe')
+        self.frame_visualizacao = ttk.LabelFrame(self.tab_visualizacao, text="Visualização do Grafo", style='Rounded.TLabelframe')
         self.frame_visualizacao.pack(fill='both', expand=True, padx=15, pady=15)
         
         # Controles para a visualização
@@ -244,8 +290,7 @@ class GUI:
         self.slider_nos.pack(side='left', padx=(0, 20))
         
         # Botão para atualizar a visualização
-        self.btn_atualizar_vis = ttk.Button(self.frame_controles, text="Atualizar", 
-                                       command=self.atualizar_visualizacao)
+        self.btn_atualizar_vis = criar_botao_arredondado(self.frame_controles, "Atualizar", self.atualizar_visualizacao, 15)
         self.btn_atualizar_vis.pack(side='left')
         
         # Área para visualização do grafo
@@ -266,7 +311,9 @@ class GUI:
                                  anchor=tk.W, 
                                  background=self.cores["destaque"],
                                  foreground=self.cores["botao_texto"],
-                                 font=("Segoe UI", 9))
+                                 font=("Segoe UI", 9),
+                                 padx=10,
+                                 pady=3)
         self.barra_status.pack(side=tk.BOTTOM, fill=tk.X)
     
     def atualizar_valor_slider(self, event=None):
