@@ -43,6 +43,21 @@ def extract_field(field_name, content):
     return ""
 
 
+def get_header_before_x_fields(content):
+    """
+    Retorna apenas o cabeçalho principal do e-mail, parando antes das linhas que começam com 'X-'.
+    """
+    lines = content.splitlines()
+    header_lines = []
+
+    for line in lines:
+        if line.startswith("X-"):
+            break
+        header_lines.append(line)
+
+    return "\n".join(header_lines)
+
+
 def process_email_file(file_path, email_id):
     """
     Leitura de um arquivo de e-mail e extrai ID, Sender e Receivers.
@@ -54,10 +69,13 @@ def process_email_file(file_path, email_id):
         print(f"Erro ao ler {file_path}: {e}")
         return None
 
-    sender_match = re.search(r'From:\s*(.+?)(?=\n|$)', content)
-    to_field = extract_field('To', content)
-    cc_field = extract_field('Cc', content)
-    bcc_field = extract_field('Bcc', content)
+    # Pega apenas o cabeçalho principal
+    header = get_header_before_x_fields(content)
+
+    sender_match = re.search(r'From:\s*(.+?)(?=\n|$)', header)
+    to_field = extract_field('To', header)
+    cc_field = extract_field('Cc', header)
+    bcc_field = extract_field('Bcc', header)
 
     sender = sender_match.group(1).strip() if sender_match else None # Evita que o programe pare caso o atributo seja None
     if sender is None : return False                                 # Desvia o fluxo caso o Sender/Vértice seja vazio
