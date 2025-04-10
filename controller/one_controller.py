@@ -4,7 +4,6 @@ Controller referente a solução da questão 1
 --> Criação do grafo: rotulado, direcionado e ponderado
 """
 
-
 from utils.logger import logger
 from models import *
 
@@ -18,7 +17,7 @@ def gerar_grafo():
     for email in db:
         sender = email["sender"]
         receivers = email["receiver"]
-        print(sender, receivers)
+        #print(sender, receivers)
 
         for receiver in receivers:
             conexao = (sender.lower(), receiver.lower())
@@ -45,5 +44,6 @@ def salvar_grafo_txt(caminho_arquivo='../data/grafo.txt'):
 
     logger.info(f"Grafo salvo com sucesso em {caminho_arquivo}")
 
+
 # Somente para teste
-gerar_grafo()
+#gerar_grafo()
