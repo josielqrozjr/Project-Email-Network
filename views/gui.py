@@ -221,7 +221,25 @@ class GUI:
         
         # Slider para número de nós a exibir
         ttk.Label(self.frame_controles, text="Número de nós:").pack(side='left', padx=(0, 5))
-        self.slider_nos = ttk.Scale(self.frame_controles, from_=10, to=100, orient='horizontal', length=200)
+        
+        # Variável para armazenar o valor atual do slider
+        self.var_num_nos = tk.IntVar(value=30)
+        
+        # Label para mostrar o valor atual do slider
+        self.lbl_num_nos = ttk.Label(self.frame_controles, 
+                                   text="30", 
+                                   font=("Segoe UI", 10, "bold"),
+                                   foreground=self.cores["destaque"])
+        self.lbl_num_nos.pack(side='left', padx=(0, 5))
+        
+        # Slider com callback para atualização em tempo real
+        self.slider_nos = ttk.Scale(self.frame_controles, 
+                                 from_=10, 
+                                 to=100, 
+                                 orient='horizontal', 
+                                 length=200,
+                                 variable=self.var_num_nos,
+                                 command=self.atualizar_valor_slider)
         self.slider_nos.set(30)
         self.slider_nos.pack(side='left', padx=(0, 20))
         
@@ -250,6 +268,11 @@ class GUI:
                                  foreground=self.cores["botao_texto"],
                                  font=("Segoe UI", 9))
         self.barra_status.pack(side=tk.BOTTOM, fill=tk.X)
+    
+    def atualizar_valor_slider(self, event=None):
+        """Atualiza o valor exibido do slider em tempo real"""
+        valor = int(self.slider_nos.get())
+        self.lbl_num_nos.config(text=str(valor))
     
     def executar_gerar_grafo(self):
         self.log_area.delete(1.0, tk.END)
