@@ -1,5 +1,5 @@
 from multiprocessing import Pool, cpu_count
-from models import *
+from controller.one_controller import grafo
 import time
 
 

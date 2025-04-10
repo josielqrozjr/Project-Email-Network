@@ -35,7 +35,8 @@ def gerar_grafo():
     return '\nGrafo gerado com sucesso!'
 
 
-def salvar_grafo_txt(caminho_arquivo='../data/grafo.txt'):
+def salvar_grafo_txt(nome_arquivo='grafo.txt'):
+    caminho_arquivo = f'../data/{nome_arquivo}'
     with open(caminho_arquivo, 'w', encoding='utf-8') as f:
         for remetente, destinos in grafo.adj_list.items():
             linha = f"{remetente}: "
@@ -45,5 +46,10 @@ def salvar_grafo_txt(caminho_arquivo='../data/grafo.txt'):
     logger.info(f"Grafo salvo com sucesso em {caminho_arquivo}")
 
 
-# Somente para teste
-#gerar_grafo()
+# Gerar o grafo para disponibilizar para as outras questões
+gerar_grafo()
+
+
+# Testes
+#file = "teste.txt"
+#salvar_grafo_txt(file)
