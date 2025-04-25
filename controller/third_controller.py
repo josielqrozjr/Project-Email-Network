@@ -53,7 +53,7 @@ def grafo_euleriano_direcionado():
     # Conta entradas
     for origem in grafo.adj_list:
         for destino, _ in grafo.adj_list[origem]:
-            grau_entrada[destino] = grau_entrada.get(destino, 0) + 1
+            grau_entrada[destino] = grau_entrada.get(destino, 0) + 1 
 
     # Verifica condições
     for vertice in grafo.adj_list:
