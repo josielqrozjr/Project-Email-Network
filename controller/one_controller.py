@@ -11,44 +11,53 @@ from models import *
 global grafo
 grafo = Grafo()
 
+<<<<<<< HEAD
 
 # Função para gerar o grafo e salvá-lo automaticamente no diretório padrão
 def gerar_grafo():
     arestas = {}                        # Armazenar arestas
+=======
+>>>>>>> e448fc7528551384ffb6594ac69215a50956bad4
 
-    for email in db:
-        sender = email["sender"]
+# Função para gerar o grafo e salvá-lo automaticamente no diretório padrão
+def gerar_grafo():
+    arestas = {}                        # Armazenar arestas, adiante serão armazenados como pares de chave -> valor
+
+    for email in db:                    # Percorrer todos os dados de DB armazenando nas
+        sender = email["sender"]        # variáveis os valores desejados
         receivers = email["receiver"]
-        #print(sender, receivers)
+        #print(sender, receivers)       # Fins de Debug
 
         for receiver in receivers:
-            conexao = (sender.lower(), receiver.lower())
+            conexao = (sender.lower(), receiver.lower())    # Lower() para tratar emails com uniformidade
             if conexao in arestas:
-                arestas[conexao] += 1
+                arestas[conexao] += 1                       # Caso a aresta/conexão já exista, então incrementa o peso
             else:
-                arestas[conexao] = 1
+                arestas[conexao] = 1                        # Caso seja não exista, define peso 1 (primeiro envio)
 
-    for (sender, receiver), peso in arestas.items():
-        resultado = grafo.insere_aresta(sender, receiver, peso)
-        logger.debug(f"{resultado}: {sender} > {receiver} > {peso}")
 
-    salvar_grafo_txt()
+    for (sender, receiver), peso in arestas.items():        # Para cada par de chave -> valor do dicionário "arestas"
+        resultado = grafo.insere_aresta(sender, receiver, peso)     # Insere cada aresta no Grafo
+        logger.warning(f"{resultado}: {sender} > {receiver} > {peso}")
+
+    salvar_grafo_txt() # Chamada da função para salvar o grafo em formato de texto
 
     return '\nGrafo gerado com sucesso!'
 
 
-def salvar_grafo_txt(nome_arquivo='grafo.txt'):
+# Função para salvar o grafo em um arquivo txt
+def salvar_grafo_txt(nome_arquivo='grafo.txt'):                 # Nome do arquivo pode ser alterado via parâmetro
     caminho_arquivo = f'../data/{nome_arquivo}'
     with open(caminho_arquivo, 'w', encoding='utf-8') as f:
-        for remetente, destinos in grafo.adj_list.items():
-            linha = f"{remetente}: "
+        for remetente, destinos in grafo.adj_list.items():      # Itera sobre a lista de adjacências
+            linha = f"{remetente}: "                            # Configurar a saída
             linha += " -> ".join([f"({destinatario}, {peso})" for destinatario, peso in destinos])
-            f.write(linha + "\n")
+            f.write(linha + "\n")   # Gravar no arquivo
 
-    logger.info(f"Grafo salvo com sucesso em {caminho_arquivo}")
+    logger.info(f"Grafo salvo com sucesso em {caminho_arquivo}")    # Controle de logs
 
 
-# Gerar o grafo para disponibilizar para as outras questões
+# Gerar o grafo para disponibilizar para as outros controllers
 gerar_grafo()
 
 
