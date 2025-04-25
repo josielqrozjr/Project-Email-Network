@@ -52,11 +52,7 @@ def grafo_euleriano_direcionado():
     # Conta entradas
     for origem in grafo.adj_list:
         for destino, _ in grafo.adj_list[origem]:
-<<<<<<< HEAD
-            grau_entrada[destino] = grau_entrada.get(destino, 0) + 1 #oda vez que o vértice destino receber uma aresta, aumente o contador do grau de entrada dele em 1
-=======
-            grau_entrada[destino] = grau_entrada.get(destino, 0) + 1 
->>>>>>> e448fc7528551384ffb6594ac69215a50956bad4
+            grau_entrada[destino] = grau_entrada.get(destino, 0) + 1 #toda vez que o vértice destino receber uma aresta, aumente o contador do grau de entrada dele em 1
 
     # Verifica condições
     for vertice in grafo.adj_list:

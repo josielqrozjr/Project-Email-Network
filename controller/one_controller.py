@@ -11,13 +11,10 @@ from models import *
 global grafo
 grafo = Grafo()
 
-<<<<<<< HEAD
 
 # Função para gerar o grafo e salvá-lo automaticamente no diretório padrão
 def gerar_grafo():
     arestas = {}                        # Armazenar arestas
-=======
->>>>>>> e448fc7528551384ffb6594ac69215a50956bad4
 
 # Função para gerar o grafo e salvá-lo automaticamente no diretório padrão
 def gerar_grafo():
