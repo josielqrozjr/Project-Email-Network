@@ -4,13 +4,14 @@ Tema elegante com cores neutras e sofisticadas
 """
 
 import tkinter as tk
-from tkinter import ttk, scrolledtext, messagebox, font
+from tkinter import ttk, scrolledtext, messagebox, font, Entry, StringVar
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 import random
 import os
 import sys
+import time
 
 # Adicionar o diretório raiz ao path para importações corretas
 # quando executado diretamente
@@ -29,6 +30,10 @@ from controller.two_controller import (
     get_maiores_graus_saida,
     grafo
 )
+# Importando os novos controllers
+from controller.third_controller import grafo_euleriano_direcionado
+from controller.four_controller import vertices_ate_distancia
+from controller.five_controller import calcular_diametro, calcular_diametro_paralelo
 
 class GUI:
     def __init__(self, root=None):
@@ -164,6 +169,19 @@ class GUI:
         # Aba de Visualização
         self.tab_visualizacao = ttk.Frame(self.notebook, style='TFrame')
         self.notebook.add(self.tab_visualizacao, text="Visualização")
+        
+        # Novas abas para os novos controllers
+        # Aba para o controller 3 - Verificação de grafo euleriano
+        self.tab_euleriano = ttk.Frame(self.notebook, style='TFrame')
+        self.notebook.add(self.tab_euleriano, text="Grafo Euleriano")
+        
+        # Aba para o controller 4 - Distância entre vértices
+        self.tab_distancia = ttk.Frame(self.notebook, style='TFrame')
+        self.notebook.add(self.tab_distancia, text="Distância entre Vértices")
+        
+        # Aba para o controller 5 - Diâmetro do grafo
+        self.tab_diametro = ttk.Frame(self.notebook, style='TFrame')
+        self.notebook.add(self.tab_diametro, text="Diâmetro do Grafo")
         
         # Conteúdo da Aba Principal
         # Frame para as ações
@@ -303,6 +321,11 @@ class GUI:
         self.canvas_vis.get_tk_widget().pack(fill=tk.BOTH, expand=True)
         self.canvas_vis.draw()
         
+        # Configurar as novas abas
+        self.configurar_aba_euleriano()
+        self.configurar_aba_distancia()
+        self.configurar_aba_diametro()
+        
         # Barra de status no rodapé
         self.barra_status = tk.Label(self.root, 
                                  text="Pronto", 
@@ -315,6 +338,115 @@ class GUI:
                                  padx=10,
                                  pady=3)
         self.barra_status.pack(side=tk.BOTTOM, fill=tk.X)
+    
+    def configurar_aba_euleriano(self):
+        """Configura a aba de verificação de grafo euleriano (Controller 3)"""
+        frame_euleriano = ttk.LabelFrame(self.tab_euleriano, text="Verificação de Grafo Euleriano", style='Rounded.TLabelframe')
+        frame_euleriano.pack(fill='both', expand=True, padx=15, pady=15)
+        
+        # Botão para verificar se é euleriano
+        frame_btn = ttk.Frame(frame_euleriano, style='TFrame')
+        frame_btn.pack(pady=15)
+        
+        btn_verificar = self.criar_botao_arredondado(frame_btn, "Verificar se o Grafo é Euleriano", self.verificar_euleriano)
+        btn_verificar.pack()
+        
+        # Área de resultados
+        self.euleriano_area = scrolledtext.ScrolledText(frame_euleriano, 
+                                                   width=70, 
+                                                   height=25,
+                                                   background=self.cores["bg_text"],
+                                                   foreground=self.cores["texto"],
+                                                   font=("Consolas", 10),
+                                                   borderwidth=1,
+                                                   relief="solid")
+        self.euleriano_area.pack(fill='both', expand=True, padx=5, pady=5)
+    
+    def configurar_aba_distancia(self):
+        """Configura a aba de cálculo de distância entre vértices (Controller 4)"""
+        frame_distancia = ttk.LabelFrame(self.tab_distancia, text="Vértices até uma Distância Máxima", style='Rounded.TLabelframe')
+        frame_distancia.pack(fill='both', expand=True, padx=15, pady=15)
+        
+        # Frame para entrada de dados
+        frame_entrada = ttk.Frame(frame_distancia, style='TFrame')
+        frame_entrada.pack(fill='x', padx=5, pady=15)
+        
+        # Entrada para vértice de origem
+        ttk.Label(frame_entrada, text="Vértice de origem:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        self.entrada_origem = ttk.Entry(frame_entrada, width=30)
+        self.entrada_origem.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        
+        # Entrada para distância máxima
+        ttk.Label(frame_entrada, text="Distância máxima:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+        self.entrada_distancia = ttk.Entry(frame_entrada, width=10)
+        self.entrada_distancia.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        
+        # Botão para calcular
+        btn_calcular = self.criar_botao_arredondado(frame_entrada, "Calcular", self.calcular_distancia)
+        btn_calcular.grid(row=2, column=0, columnspan=2, padx=5, pady=15)
+        
+        # Área de resultados
+        self.distancia_area = scrolledtext.ScrolledText(frame_distancia, 
+                                                   width=70, 
+                                                   height=20,
+                                                   background=self.cores["bg_text"],
+                                                   foreground=self.cores["texto"],
+                                                   font=("Consolas", 10),
+                                                   borderwidth=1,
+                                                   relief="solid")
+        self.distancia_area.pack(fill='both', expand=True, padx=5, pady=5)
+    
+    def configurar_aba_diametro(self):
+        """Configura a aba de cálculo do diâmetro do grafo (Controller 5)"""
+        frame_diametro = ttk.LabelFrame(self.tab_diametro, text="Cálculo do Diâmetro do Grafo", style='Rounded.TLabelframe')
+        frame_diametro.pack(fill='both', expand=True, padx=15, pady=15)
+        
+        # Frame para os botões
+        frame_btns = ttk.Frame(frame_diametro, style='TFrame')
+        frame_btns.pack(fill='x', padx=5, pady=15)
+        
+        # Botões para cálculo sequencial e paralelo
+        btn_seq = self.criar_botao_arredondado(frame_btns, "Calcular Diâmetro (Sequencial)", self.calcular_diametro_seq)
+        btn_seq.pack(side='left', padx=10)
+        
+        btn_par = self.criar_botao_arredondado(frame_btns, "Calcular Diâmetro (Paralelo)", self.calcular_diametro_par)
+        btn_par.pack(side='left', padx=10)
+        
+        # Área de resultados
+        self.diametro_area = scrolledtext.ScrolledText(frame_diametro, 
+                                                  width=70, 
+                                                  height=20,
+                                                  background=self.cores["bg_text"],
+                                                  foreground=self.cores["texto"],
+                                                  font=("Consolas", 10),
+                                                  borderwidth=1,
+                                                  relief="solid")
+        self.diametro_area.pack(fill='both', expand=True, padx=5, pady=5)
+    
+    def criar_botao_arredondado(self, parent, texto, comando, largura=20):
+        """Função para criar botões arredondados personalizados"""
+        frame = tk.Frame(parent, bg=self.cores["destaque"], bd=0, highlightthickness=0)
+        frame.bind("<Enter>", lambda e: frame.config(bg=self.cores["destaque_hover"]))
+        frame.bind("<Leave>", lambda e: frame.config(bg=self.cores["destaque"]))
+        
+        # Criando um Canvas para desenhar a borda arredondada
+        canvas = tk.Canvas(frame, bg=self.cores["destaque"], highlightthickness=0, 
+                        width=largura*8, height=32)
+        canvas.pack(side='left', fill='both', expand=True)
+        
+        # Criando o botão
+        btn = tk.Button(canvas, text=texto, command=comando,
+                     bg=self.cores["destaque"], fg=self.cores["botao_texto"],
+                     activebackground=self.cores["destaque_hover"],
+                     activeforeground=self.cores["botao_texto"],
+                     font=("Segoe UI", 10, "bold"),
+                     bd=0, padx=10, pady=0)
+        
+        btn_window = canvas.create_window(largura*4, 16, window=btn)
+        btn.bind("<Enter>", lambda e: frame.config(bg=self.cores["destaque_hover"]))
+        btn.bind("<Leave>", lambda e: frame.config(bg=self.cores["destaque"]))
+        
+        return frame
     
     def atualizar_valor_slider(self, event=None):
         """Atualiza o valor exibido do slider em tempo real"""
@@ -516,6 +648,163 @@ class GUI:
         except Exception as e:
             self.barra_status.config(text="Erro ao carregar informações")
             messagebox.showerror("Erro", f"Ocorreu um erro ao mostrar informações: {str(e)}")
+    
+    def verificar_euleriano(self):
+        """Verifica se o grafo é euleriano e mostra o resultado"""
+        try:
+            self.barra_status.config(text="Verificando se o grafo é euleriano...")
+            self.root.update()
+            
+            self.euleriano_area.delete(1.0, tk.END)
+            self.euleriano_area.tag_configure("titulo", foreground=self.cores["destaque"], font=("Consolas", 11, "bold"))
+            self.euleriano_area.tag_configure("resultado", foreground=self.cores["texto"], font=("Consolas", 10))
+            self.euleriano_area.tag_configure("positivo", foreground="green", font=("Consolas", 10, "bold"))
+            self.euleriano_area.tag_configure("negativo", foreground="red", font=("Consolas", 10, "bold"))
+            
+            # Verificar se o grafo é euleriano
+            eh_euleriano, mensagem = grafo_euleriano_direcionado()
+            
+            # Exibir resultado
+            self.euleriano_area.insert(tk.END, "=== VERIFICAÇÃO DE GRAFO EULERIANO ===\n\n", "titulo")
+            
+            if eh_euleriano:
+                self.euleriano_area.insert(tk.END, "O grafo É euleriano!\n\n", "positivo")
+                self.euleriano_area.insert(tk.END, mensagem + "\n", "resultado")
+            else:
+                self.euleriano_area.insert(tk.END, "O grafo NÃO é euleriano!\n\n", "negativo")
+                self.euleriano_area.insert(tk.END, "Condições não satisfeitas:\n", "resultado")
+                for condicao in mensagem:
+                    self.euleriano_area.insert(tk.END, f"- {condicao}\n", "resultado")
+            
+            self.barra_status.config(text="Verificação de grafo euleriano concluída")
+        except Exception as e:
+            self.barra_status.config(text="Erro na verificação")
+            messagebox.showerror("Erro", f"Ocorreu um erro na verificação: {str(e)}")
+    
+    def calcular_distancia(self):
+        """Calcula os vértices alcançáveis a partir de uma origem até uma distância máxima"""
+        try:
+            origem = self.entrada_origem.get().strip()
+            
+            # Verificar se a origem existe no grafo
+            if not origem or origem not in grafo.adj_list:
+                messagebox.showerror("Erro", "Vértice de origem não encontrado no grafo!")
+                return
+            
+            # Verificar se a distância é válida
+            try:
+                distancia_maxima = int(self.entrada_distancia.get().strip())
+                if distancia_maxima < 0:
+                    messagebox.showerror("Erro", "A distância máxima deve ser um inteiro não negativo!")
+                    return
+            except ValueError:
+                messagebox.showerror("Erro", "Entrada inválida! Digite um número inteiro para a distância.")
+                return
+            
+            self.barra_status.config(text=f"Calculando vértices até distância {distancia_maxima}...")
+            self.root.update()
+            
+            # Calcular vértices até a distância
+            vertices = vertices_ate_distancia(origem, distancia_maxima)
+            
+            # Exibir resultado
+            self.distancia_area.delete(1.0, tk.END)
+            self.distancia_area.tag_configure("titulo", foreground=self.cores["destaque"], font=("Consolas", 11, "bold"))
+            self.distancia_area.tag_configure("subtitulo", foreground=self.cores["destaque"], font=("Consolas", 10, "bold"))
+            self.distancia_area.tag_configure("normal", foreground=self.cores["texto"], font=("Consolas", 10))
+            
+            self.distancia_area.insert(tk.END, "=== VÉRTICES ALCANÇÁVEIS ATÉ UMA DISTÂNCIA MÁXIMA ===\n\n", "titulo")
+            self.distancia_area.insert(tk.END, f"Origem: {origem}\n", "subtitulo")
+            self.distancia_area.insert(tk.END, f"Distância máxima: {distancia_maxima}\n\n", "subtitulo")
+            
+            if vertices:
+                self.distancia_area.insert(tk.END, f"Total de vértices encontrados: {len(vertices)}\n\n", "normal")
+                self.distancia_area.insert(tk.END, "Vértices alcançáveis:\n", "subtitulo")
+                for i, v in enumerate(vertices, 1):
+                    self.distancia_area.insert(tk.END, f"{i}. {v}\n", "normal")
+            else:
+                self.distancia_area.insert(tk.END, "Nenhum vértice encontrado para essa distância.\n", "normal")
+            
+            self.barra_status.config(text="Cálculo de distância concluído")
+        except Exception as e:
+            self.barra_status.config(text="Erro no cálculo de distância")
+            messagebox.showerror("Erro", f"Ocorreu um erro no cálculo: {str(e)}")
+    
+    def calcular_diametro_seq(self):
+        """Calcula o diâmetro do grafo usando o método sequencial"""
+        try:
+            self.barra_status.config(text="Calculando o diâmetro do grafo (sequencial)...")
+            self.root.update()
+            
+            self.diametro_area.delete(1.0, tk.END)
+            self.diametro_area.tag_configure("titulo", foreground=self.cores["destaque"], font=("Consolas", 11, "bold"))
+            self.diametro_area.tag_configure("subtitulo", foreground=self.cores["destaque"], font=("Consolas", 10, "bold"))
+            self.diametro_area.tag_configure("normal", foreground=self.cores["texto"], font=("Consolas", 10))
+            self.diametro_area.tag_configure("destaque", foreground=self.cores["destaque_hover"], font=("Consolas", 10, "bold"))
+            
+            self.diametro_area.insert(tk.END, "=== CÁLCULO DO DIÂMETRO DO GRAFO (SEQUENCIAL) ===\n\n", "titulo")
+            self.diametro_area.insert(tk.END, "Calculando...\n", "normal")
+            self.root.update()
+            
+            # Medir o tempo de execução
+            inicio = time.time()
+            diametro, caminho = calcular_diametro(grafo)
+            fim = time.time()
+            tempo = fim - inicio
+            
+            # Exibir resultados
+            self.diametro_area.delete(1.0, tk.END)
+            self.diametro_area.insert(tk.END, "=== CÁLCULO DO DIÂMETRO DO GRAFO (SEQUENCIAL) ===\n\n", "titulo")
+            self.diametro_area.insert(tk.END, f"Diâmetro: ", "subtitulo")
+            self.diametro_area.insert(tk.END, f"{diametro}\n\n", "destaque")
+            
+            self.diametro_area.insert(tk.END, "Caminho correspondente:\n", "subtitulo")
+            self.diametro_area.insert(tk.END, " -> ".join(caminho) + "\n\n", "normal")
+            
+            self.diametro_area.insert(tk.END, f"Tempo de execução: {tempo:.2f} segundos\n", "normal")
+            
+            self.barra_status.config(text="Cálculo do diâmetro concluído")
+        except Exception as e:
+            self.barra_status.config(text="Erro no cálculo do diâmetro")
+            messagebox.showerror("Erro", f"Ocorreu um erro no cálculo: {str(e)}")
+    
+    def calcular_diametro_par(self):
+        """Calcula o diâmetro do grafo usando o método paralelo"""
+        try:
+            self.barra_status.config(text="Calculando o diâmetro do grafo (paralelo)...")
+            self.root.update()
+            
+            self.diametro_area.delete(1.0, tk.END)
+            self.diametro_area.tag_configure("titulo", foreground=self.cores["destaque"], font=("Consolas", 11, "bold"))
+            self.diametro_area.tag_configure("subtitulo", foreground=self.cores["destaque"], font=("Consolas", 10, "bold"))
+            self.diametro_area.tag_configure("normal", foreground=self.cores["texto"], font=("Consolas", 10))
+            self.diametro_area.tag_configure("destaque", foreground=self.cores["destaque_hover"], font=("Consolas", 10, "bold"))
+            
+            self.diametro_area.insert(tk.END, "=== CÁLCULO DO DIÂMETRO DO GRAFO (PARALELO) ===\n\n", "titulo")
+            self.diametro_area.insert(tk.END, "Calculando...\n", "normal")
+            self.root.update()
+            
+            # Medir o tempo de execução
+            inicio = time.time()
+            diametro, caminho = calcular_diametro_paralelo(grafo)
+            fim = time.time()
+            tempo = fim - inicio
+            
+            # Exibir resultados
+            self.diametro_area.delete(1.0, tk.END)
+            self.diametro_area.insert(tk.END, "=== CÁLCULO DO DIÂMETRO DO GRAFO (PARALELO) ===\n\n", "titulo")
+            self.diametro_area.insert(tk.END, f"Diâmetro: ", "subtitulo")
+            self.diametro_area.insert(tk.END, f"{diametro}\n\n", "destaque")
+            
+            self.diametro_area.insert(tk.END, "Caminho correspondente:\n", "subtitulo")
+            self.diametro_area.insert(tk.END, " -> ".join(caminho) + "\n\n", "normal")
+            
+            self.diametro_area.insert(tk.END, f"Tempo de execução: {tempo:.2f} segundos\n", "normal")
+            
+            self.barra_status.config(text="Cálculo do diâmetro concluído")
+        except Exception as e:
+            self.barra_status.config(text="Erro no cálculo do diâmetro")
+            messagebox.showerror("Erro", f"Ocorreu um erro no cálculo: {str(e)}")
     
     def iniciar(self):
         self.root.mainloop()

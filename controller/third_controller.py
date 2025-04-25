@@ -1,5 +1,4 @@
 from models import *
-from models import *
 from controller.one_controller import grafo
 
 def dfs(v, visited, adj_list):
@@ -10,21 +9,21 @@ def dfs(v, visited, adj_list):
 
 # Verifica se o grafo é fortemente conexo
 def is_strongly_connected():
-    visited = set()
-    vertices = list(grafo.adj_list.keys())
+    visited = set() #conjunto de valores únicos com fácil acesso a "in"
+    vertices = list(grafo.adj_list.keys()) #dicionário com keys (vértices)
     if not vertices:
         return False
 
     # DFS no grafo original
-    dfs(vertices[0], visited, grafo.adj_list)
+    dfs(vertices[0], visited, grafo.adj_list) #só faz no primeiro vérticepra ver se ele alcanca todos os outros
     if len(visited) != len(vertices):
         return False
 
     # Cria grafo transposto
     transposed = {v: [] for v in vertices}
-    for origem, destinos in grafo.adj_list.items():
+    for origem, destinos in grafo.adj_list.items(): #items() retorna pares chave-valor
         for destino, peso in destinos:
-            transposed[destino].append((origem, peso))
+            transposed[destino].append((origem, peso)) # usa-se destino por conta da aresta transposta
 
     # DFS no transposto
     visited.clear()
@@ -53,7 +52,7 @@ def grafo_euleriano_direcionado():
     # Conta entradas
     for origem in grafo.adj_list:
         for destino, _ in grafo.adj_list[origem]:
-            grau_entrada[destino] = grau_entrada.get(destino, 0) + 1
+            grau_entrada[destino] = grau_entrada.get(destino, 0) + 1 #oda vez que o vértice destino receber uma aresta, aumente o contador do grau de entrada dele em 1
 
     # Verifica condições
     for vertice in grafo.adj_list:

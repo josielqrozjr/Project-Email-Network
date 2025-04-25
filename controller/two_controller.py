@@ -1,6 +1,6 @@
 """
 two_controller.py
-Controller referente a solução da questão 1 (análise do grafo)
+Controller referente a solução da questão 2 (análise do grafo)
 --> Extração de métricas e informações da rede construída
 """
 
@@ -18,12 +18,14 @@ def get_vertices_isolados():
     vertices_isolados = []
     vertices_com_entrada = set()
 
+    # Identificar vértices que recebem arestas
     for vertice, destinos in grafo.adj_list.items():
-        for destino in destinos:
+        for destino, _ in destinos:
             vertices_com_entrada.add(destino)
     
+    # Um vértice é isolado se não tiver arestas de saída e nem arestas de entrada
     for vertice in grafo.adj_list:
-        if not grafo.adj_list[vertice] and vertice not in vertices_com_entrada:
+        if len(grafo.adj_list[vertice]) == 0 and vertice not in vertices_com_entrada:
             vertices_isolados.append(vertice)
     
     return vertices_isolados, len(vertices_isolados)

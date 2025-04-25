@@ -70,3 +70,6 @@ def verificar_menor_caminho():
         return
     print(f"\nVÉRTICES COM MENOR CAMINHO ATÉ A DISTÂNCIA ACUMULADA DE {distancia_maxima}:")
     print(vertices_ate_distancia(origem, distancia_maxima))
+
+# Teste
+verificar_menor_caminho()

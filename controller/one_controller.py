@@ -11,8 +11,10 @@ from models import *
 global grafo
 grafo = Grafo()
 
+
+# Função para gerar o grafo e salvá-lo automaticamente no diretório padrão
 def gerar_grafo():
-    arestas = {}
+    arestas = {}                        # Armazenar arestas
 
     for email in db:
         sender = email["sender"]

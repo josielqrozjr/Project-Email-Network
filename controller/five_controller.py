@@ -44,6 +44,7 @@ def processar_dijkstra(origem):
         return (max_dist, caminho)
     return (None, None)
 
+
 def calcular_diametro_paralelo(grafo):
     with Pool(cpu_count()) as pool:
         resultados = pool.map(processar_dijkstra, list(grafo.adj_list.keys()))
